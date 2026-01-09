@@ -1,3 +1,15 @@
+// Generate or get user ID
+function getUserId() {
+    let userId = localStorage.getItem("user_id");
+    if (!userId) {
+        userId = crypto.randomUUID();
+        localStorage.setItem("user_id", userId);
+    }
+    return userId;
+}
+
+const USER_ID = getUserId();
+
 class TodoApp {
     constructor() {
         this.todos = [];
@@ -81,7 +93,7 @@ class TodoApp {
 
     async loadTodos() {
         try {
-            const response = await fetch('/api/todos');
+            const response = await fetch(`/api/todos?user_id=${USER_ID}`);
             this.todos = await response.json();
             this.renderTodos();
             this.updateStats();
@@ -106,7 +118,8 @@ class TodoApp {
                     text,
                     priority,
                     due_date: dueDate || null,
-                    category: category || 'general'
+                    category: category || 'general',
+                    user_id: USER_ID
                 })
             });
 
@@ -123,7 +136,7 @@ class TodoApp {
 
     async updateTodo(id, updates) {
         try {
-            await fetch(`/api/todos/${id}`, {
+            await fetch(`/api/todos/${id}?user_id=${USER_ID}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updates)
@@ -140,7 +153,7 @@ class TodoApp {
 
     async deleteTodo(id) {
         try {
-            await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+            await fetch(`/api/todos/${id}?user_id=${USER_ID}`, { method: 'DELETE' });
             this.todos = this.todos.filter(t => t.id !== id);
             this.selectedTodos.delete(id);
             this.renderTodos();
@@ -310,4 +323,5 @@ class TodoApp {
 }
 
 // Initialize app
+
 const app = new TodoApp();
