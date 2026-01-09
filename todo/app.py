@@ -47,9 +47,9 @@ new_todo = {
     'created_at': datetime.now().isoformat(),
     'due_date': data.get('due_date')
 }
-    todos.append(new_todo)
-    save_todos(todos)
-    return jsonify(new_todo)
+todos.append(new_todo)
+save_todos(todos)
+return jsonify(new_todo)
 
 @app.route('/api/todos/<int:todo_id>', methods=['PUT'])
 def update_todo(todo_id):
@@ -78,4 +78,5 @@ def delete_todo(todo_id):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
