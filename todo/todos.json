@@ -1,0 +1,83 @@
+[
+  {
+    "id": 2,
+    "text": "canara bank",
+    "completed": false,
+    "priority": "high",
+    "category": "general",
+    "created_at": "2025-06-03T09:22:16.560945",
+    "due_date": null
+  },
+  {
+    "id": 2,
+    "text": "develop skill in cloud",
+    "completed": false,
+    "priority": "high",
+    "category": "general",
+    "created_at": "2025-12-15T19:25:29.857561",
+    "due_date": null
+  },
+  {
+    "id": 3,
+    "text": "tcs",
+    "completed": false,
+    "priority": "medium",
+    "category": "general",
+    "created_at": "2025-12-15T19:25:56.027967",
+    "due_date": null
+  },
+  {
+    "id": 4,
+    "text": "license",
+    "completed": false,
+    "priority": "low",
+    "category": "general",
+    "created_at": "2025-12-15T19:26:57.982887",
+    "due_date": null
+  },
+  {
+    "id": 5,
+    "text": "weight gain",
+    "completed": false,
+    "priority": "low",
+    "category": "general",
+    "created_at": "2025-12-15T19:27:13.507896",
+    "due_date": null
+  },
+  {
+    "id": 6,
+    "text": "gold",
+    "completed": false,
+    "priority": "low",
+    "category": "general",
+    "created_at": "2025-12-15T19:28:12.762385",
+    "due_date": null
+  },
+  {
+    "id": 7,
+    "text": "washing machine",
+    "completed": false,
+    "priority": "low",
+    "category": "general",
+    "created_at": "2025-12-15T19:28:25.667053",
+    "due_date": null
+  },
+  {
+    "id": 8,
+    "text": "tv",
+    "completed": false,
+    "priority": "medium",
+    "category": "general",
+    "created_at": "2025-12-15T19:28:30.529153",
+    "due_date": null
+  },
+  {
+    "id": 9,
+    "text": "family trip",
+    "completed": false,
+    "priority": "medium",
+    "category": "general",
+    "created_at": "2025-12-15T19:28:42.501828",
+    "due_date": null
+  }
+]
