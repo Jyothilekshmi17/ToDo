@@ -63,6 +63,5 @@ def delete_todo(todo_id):
     todos = [t for t in todos if t['id'] != todo_id]
     save_todos(todos)
     return jsonify({'success': True})
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
