@@ -50,6 +50,9 @@ def add_todo():
     todo = {
         "text": data["text"],
         "completed": False,
+        "priority": data.get("priority", "medium"),
+        "dueDate": data.get("dueDate", ""),
+        "category": data.get("category", ""),
         "user": data["user"]
     }
 
