@@ -1,4 +1,4 @@
-// ---------- User Identification (No Login) ----------
+// ---------------- USER IDENTIFICATION (NO LOGIN) ----------------
 let userId = localStorage.getItem("todoUser");
 
 if (!userId) {
@@ -6,75 +6,129 @@ if (!userId) {
   localStorage.setItem("todoUser", userId);
 }
 
-// ---------- DOM Elements ----------
-const todoInput = document.getElementById("todo-input");
-const addBtn = document.getElementById("add-btn");
-const todoList = document.getElementById("todo-list");
+// ---------------- DOM ELEMENTS ----------------
+const todoForm = document.getElementById("todoForm");
+const todoInput = document.getElementById("todoInput");
+const prioritySelect = document.getElementById("prioritySelect");
+const dueDateInput = document.getElementById("dueDateInput");
+const categoryInput = document.getElementById("categoryInput");
 
-// ---------- Load Todos ----------
+const todoList = document.getElementById("todoList");
+const todoCount = document.getElementById("todoCount");
+const searchInput = document.getElementById("searchInput");
+
+const filterButtons = document.querySelectorAll(".filter-btn");
+
+// ---------------- STATE ----------------
+let todos = [];
+let currentFilter = "all";
+
+// ---------------- LOAD TODOS ----------------
 async function loadTodos() {
   const res = await fetch(`/todos?user=${userId}`);
-  const todos = await res.json();
+  todos = await res.json();
+  renderTodos();
+}
 
+// ---------------- RENDER TODOS ----------------
+function renderTodos() {
   todoList.innerHTML = "";
 
-  todos.forEach(todo => {
-    const li = document.createElement("li");
-    li.className = "todo-item";
+  let filteredTodos = [...todos];
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = todo.completed;
+  // Filter
+  if (currentFilter === "active") {
+    filteredTodos = filteredTodos.filter(t => !t.completed);
+  } else if (currentFilter === "completed") {
+    filteredTodos = filteredTodos.filter(t => t.completed);
+  } else if (currentFilter === "high") {
+    filteredTodos = filteredTodos.filter(t => t.priority === "high");
+  }
 
-    const span = document.createElement("span");
-    span.textContent = todo.text;
-    if (todo.completed) span.classList.add("completed");
+  // Search
+  const searchText = searchInput.value.toLowerCase();
+  if (searchText) {
+    filteredTodos = filteredTodos.filter(t =>
+      t.text.toLowerCase().includes(searchText)
+    );
+  }
 
-    checkbox.addEventListener("change", async () => {
+  filteredTodos.forEach(todo => {
+    const item = document.createElement("div");
+    item.className = `todo-item ${todo.completed ? "completed" : ""}`;
+
+    item.innerHTML = `
+      <input type="checkbox" ${todo.completed ? "checked" : ""}>
+      <div class="todo-content">
+        <span class="todo-text">${todo.text}</span>
+        <div class="todo-meta">
+          <span class="priority ${todo.priority}">${todo.priority}</span>
+          ${todo.category ? `<span class="category">${todo.category}</span>` : ""}
+          ${todo.dueDate ? `<span class="due-date">${todo.dueDate}</span>` : ""}
+        </div>
+      </div>
+      <button class="delete-btn"><i class="fas fa-trash"></i></button>
+    `;
+
+    // Toggle completed
+    item.querySelector("input").addEventListener("change", async e => {
       await fetch(`/todos/${todo.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: checkbox.checked })
+        body: JSON.stringify({ completed: e.target.checked })
       });
-
-      span.classList.toggle("completed", checkbox.checked);
+      loadTodos();
     });
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "❌";
-    deleteBtn.className = "delete-btn";
-
-    deleteBtn.addEventListener("click", async () => {
+    // Delete
+    item.querySelector(".delete-btn").addEventListener("click", async () => {
       await fetch(`/todos/${todo.id}`, { method: "DELETE" });
-      li.remove();
+      loadTodos();
     });
 
-    li.appendChild(checkbox);
-    li.appendChild(span);
-    li.appendChild(deleteBtn);
-    todoList.appendChild(li);
+    todoList.appendChild(item);
   });
+
+  todoCount.textContent = `${todos.length} tasks`;
 }
 
-// ---------- Add Todo ----------
-addBtn.addEventListener("click", async () => {
+// ---------------- ADD TODO ----------------
+todoForm.addEventListener("submit", async e => {
+  e.preventDefault();
+
   const text = todoInput.value.trim();
   if (!text) return;
+
+  const todo = {
+    text,
+    priority: prioritySelect.value,
+    dueDate: dueDateInput.value,
+    category: categoryInput.value,
+    user: userId
+  };
 
   await fetch("/todos", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text, user: userId })
+    body: JSON.stringify(todo)
   });
 
-  todoInput.value = "";
+  todoForm.reset();
   loadTodos();
 });
 
-// ---------- Enter Key Support ----------
-todoInput.addEventListener("keypress", e => {
-  if (e.key === "Enter") addBtn.click();
+// ---------------- FILTER BUTTONS ----------------
+filterButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    filterButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;
+    renderTodos();
+  });
 });
 
-// ---------- Initial Load ----------
+// ---------------- SEARCH ----------------
+searchInput.addEventListener("input", renderTodos);
+
+// ---------------- INITIAL LOAD ----------------
 loadTodos();
